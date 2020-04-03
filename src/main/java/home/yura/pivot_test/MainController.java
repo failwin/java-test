@@ -20,13 +20,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @RestController
 public class MainController {
-
-    @Autowired
-    private RabbitTemplate template;
+//
+//    @Autowired
+//    private RabbitTemplate template;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -40,7 +44,7 @@ public class MainController {
         TestModel model = new TestModel(name, 28);
         logger.info("info string");
 
-        template.convertAndSend("hello-3", "Test");
+        //template.convertAndSend("hello-3", "Test");
 
 
         String res = restTemplate.execute("http://www.google.com", HttpMethod.GET, new RequestCallback() {
@@ -117,25 +121,44 @@ public class MainController {
             throw new RuntimeException(e);
         }
 
+        // Stream<Integer> stream = Stream.generate(() -> n.incrementAndGet()).limit(100);
+
         logger.debug("debug string");
         return (outputStream) -> {
             if (readStrem != null) {
                 //StreamUtils.copy(readStrem, outputStream);
 
-                int byteCount = 0;
-                byte[] buffer = new byte[4096];
+                MyStreamSpliterator testStreamSpliterator = new MyStreamSpliterator(readStrem);
+                Stream<TestModel> myStream = StreamSupport.stream(testStreamSpliterator, false);
 
-                int bytesRead;
-                try {
-                    for(boolean var4 = true; (bytesRead = readStrem.read(buffer)) != -1; byteCount += bytesRead) {
-                        outputStream.write(buffer, 0, bytesRead);
-                        logger.info(Thread.currentThread().getId() + " bytesRead " + bytesRead);
-                        Thread.sleep(10);
-                    }
-                }
-                catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+//                myStream.forEach(s -> {
+//                    logger.info(Thread.currentThread().getId() + " string " + s.getName());
+//                });
+                ArrayList<TestModel> aaa = myStream.collect(Collectors.toCollection(ArrayList::new));
+
+                logger.info(Thread.currentThread().getId() + " done " + aaa.size());
+
+                aaa = null;
+
+
+//                int byteCount = 0;
+//                byte[] buffer = new byte[4096];
+//
+//                int bytesRead;
+//                try {
+//                    for(boolean var4 = true; (bytesRead = readStrem.read(buffer)) != -1; byteCount += bytesRead) {
+//
+//                        outputStream.write(buffer, 0, bytesRead);
+//                        // logger.info(Thread.currentThread().getId() + " bytesRead " + bytesRead);
+//                        Thread.sleep(10);
+//                    }
+//                }
+//                catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+
+
+                outputStream.write("Done".getBytes());
                 outputStream.flush();
 
                 readStrem.close();

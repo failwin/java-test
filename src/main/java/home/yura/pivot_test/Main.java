@@ -17,32 +17,32 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 public class Main {
 
-    @Bean
-    Queue queue() {
-        return new Queue("hello", false);
-    }
-
-    @Bean
-    public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setHost("127.0.0.1");
-        connectionFactory.setPort(5672);
-        return connectionFactory;
-    }
-
-    @Bean
-    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory) {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueues(queue());
-        container.setMessageListener(yuraMessageListener());
-        return container;
-    }
-
-    @Bean
-    MessageListener yuraMessageListener() {
-        return new YuraMessageListener();
-    }
+//    @Bean
+//    Queue queue() {
+//        return new Queue("hello", false);
+//    }
+//
+//    @Bean
+//    public ConnectionFactory connectionFactory() {
+//        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+//        connectionFactory.setHost("127.0.0.1");
+//        connectionFactory.setPort(5672);
+//        return connectionFactory;
+//    }
+//
+//    @Bean
+//    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory) {
+//        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+//        container.setConnectionFactory(connectionFactory);
+//        container.setQueues(queue());
+//        container.setMessageListener(yuraMessageListener());
+//        return container;
+//    }
+//
+//    @Bean
+//    MessageListener yuraMessageListener() {
+//        return new YuraMessageListener();
+//    }
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {

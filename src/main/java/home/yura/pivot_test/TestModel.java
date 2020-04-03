@@ -8,9 +8,15 @@ public class TestModel {
 
     private int age;
 
+    private String[] data;
+
     TestModel(String name, int age) {
         this.name = name;
         this.age = age;
+    }
+
+    public void setData(String[] data) {
+        this.data = data;
     }
 
     public String getName() {
