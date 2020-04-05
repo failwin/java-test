@@ -222,4 +222,15 @@ public class MainController {
             outputStream.close();
         };
     }
+
+
+    @MessageMapping("/test-ws")
+    //@SendTo("/topic/response")
+    @SendToUser("/topic/response")
+    public String testWs(String request) throws Exception {
+        //Thread.sleep(1000); // simulated delay
+        logger.info("testWs - " + request);
+        // Object data = request.getData();
+        return "{\"body\":10}";
+    }
 }
