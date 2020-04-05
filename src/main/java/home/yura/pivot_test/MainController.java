@@ -4,24 +4,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import com.conductor.stream.utils.OrderedStreamUtils;
+import org.springframework.web.socket.WebSocketSession;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -126,19 +134,65 @@ public class MainController {
         logger.debug("debug string");
         return (outputStream) -> {
             if (readStrem != null) {
-                //StreamUtils.copy(readStrem, outputStream);
+                // StreamUtils.copy(readStrem, outputStream);
 
-                MyStreamSpliterator testStreamSpliterator = new MyStreamSpliterator(readStrem);
-                Stream<TestModel> myStream = StreamSupport.stream(testStreamSpliterator, false);
+                Stream<String> lines = new BufferedReader(new InputStreamReader(readStrem)).lines();
 
-//                myStream.forEach(s -> {
-//                    logger.info(Thread.currentThread().getId() + " string " + s.getName());
+                Stream<TestModel> models = lines.map(str -> {
+                    String[] parts = str.split(",");
+                    TestModel model = new TestModel(parts[0], 10);
+                    model.setData(parts);
+                    return model;
+                });
+
+//                lines.forEach(s -> {
+//                    try {
+//                        outputStream.write((s + "\n").getBytes());
+//                    }
+//                    catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    //logger.info(Thread.currentThread().getId() + " string " + s.getName());
 //                });
-                ArrayList<TestModel> aaa = myStream.collect(Collectors.toCollection(ArrayList::new));
 
-                logger.info(Thread.currentThread().getId() + " done " + aaa.size());
+                //MyStreamSpliterator testStreamSpliterator = new MyStreamSpliterator(readStrem);
+                //Stream<TestModel> myStream = StreamSupport.stream(testStreamSpliterator, false);
 
-                aaa = null;
+                //Stream<TestModel> myStream2 = myStream.collect(Collectors.groupingBy(TestModel::getItemName));
+
+//                final Stream<List<TestModel>> contentGroupedByCategory =
+//                        OrderedStreamUtils.groupBy(myStream, item -> item.getName());
+
+                //StreamUtils.copy(myStream, outputStream);
+
+//                contentGroupedByCategory.forEach(s -> {
+//                    String res = s.get(0).getName();
+//                    try {
+//                        outputStream.write((res + " " + s.size() + "\n").getBytes());
+//                    }
+//                    catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                });
+
+                models.forEach(s -> {
+                    String res = s.getName();
+                    try {
+                        outputStream.write((res + "\n").getBytes());
+                    }
+                    catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } finally {
+                        s.dispose();
+                    }
+                    //logger.info(Thread.currentThread().getId() + " string " + s.getName());
+                });
+//                myStream.close();
+//                ArrayList<TestModel> aaa = myStream.collect(Collectors.toCollection(ArrayList::new));
+//
+//                logger.info(Thread.currentThread().getId() + " done " + aaa.size());
+//
+//                aaa = null;
 
 
 //                int byteCount = 0;
@@ -158,10 +212,12 @@ public class MainController {
 //                }
 
 
-                outputStream.write("Done".getBytes());
+                // outputStream.write("Done".getBytes());
                 outputStream.flush();
 
                 readStrem.close();
+                lines.close();
+                models.close();
             }
             outputStream.close();
         };
