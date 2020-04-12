@@ -6,10 +6,13 @@ import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -49,6 +52,11 @@ import java.util.concurrent.Callable;
 public class Main implements WebSocketMessageBrokerConfigurer, AsyncConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(Main.class);
+
+    @Bean
+    public HealthContributor rabbitHealthContributor(Map<String, RabbitTemplate> rabbitTemplates) {
+        return null;
+    }
 
 //    @Bean
 //    Queue queue() {
