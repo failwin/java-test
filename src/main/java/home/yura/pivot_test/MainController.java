@@ -233,4 +233,33 @@ public class MainController {
         // Object data = request.getData();
         return "{\"body\":10}";
     }
+
+    @RequestMapping("/time")
+    @GetMapping
+    public ResponseEntity<StreamingResponseBody> timeout() {
+
+        logger.info("start time ");
+
+        StreamingResponseBody stream = out -> {
+            logger.info("start time stream");
+
+            out.write("Start stream \n".getBytes());
+
+            try {
+                Thread.sleep(320000);
+            } catch (InterruptedException ex) {
+                logger.info("error - " + ex.getMessage());
+            }
+
+            logger.info("finish time stream");
+
+            out.write("Finish stream \n".getBytes());
+            out.flush();
+        };
+
+        logger.info("finish time");
+
+        return ResponseEntity.ok()
+                .body(stream);
+    }
 }

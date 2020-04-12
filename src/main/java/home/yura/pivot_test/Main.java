@@ -91,7 +91,8 @@ public class Main implements WebSocketMessageBrokerConfigurer, AsyncConfigurer {
         return new WebMvcConfigurer() {
             @Override
             public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-                configurer.setDefaultTimeout(360000).setTaskExecutor(myTaskExecutor);
+                configurer.setDefaultTimeout(-1);
+                configurer.setTaskExecutor(myTaskExecutor);
                 configurer.registerCallableInterceptors(callableProcessingInterceptor);
                 WebMvcConfigurer.super.configureAsyncSupport(configurer);
             }
