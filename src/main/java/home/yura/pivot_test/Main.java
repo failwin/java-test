@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +45,7 @@ import java.util.concurrent.Callable;
 @EnableAsync
 @EnableWebMvc
 @EnableWebSocketMessageBroker
+@EnableConfigurationProperties
 public class Main implements WebSocketMessageBrokerConfigurer, AsyncConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(Main.class);

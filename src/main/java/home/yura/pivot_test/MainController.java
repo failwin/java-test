@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -40,6 +41,18 @@ public class MainController {
 //    @Autowired
 //    private RabbitTemplate template;
 
+    @Value("${yura.number}")
+    private int myNumber;
+
+    @Value("yura.string")
+    private String myNumber2;
+
+    @Value("${yura.number}_2222")
+    private String myNumber3;
+
+    @Autowired
+    private MyConfig myConfig;
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -51,6 +64,10 @@ public class MainController {
     public TestModel greeting(@RequestParam(name="name", required=false, defaultValue="Yura") String name) {
         TestModel model = new TestModel(name, 28);
         logger.info("info string");
+
+        logger.info("myNumber " + this.myNumber);
+        logger.info("myNumber2 " + this.myNumber2);
+        logger.info("myNumber3 " + this.myNumber3);
 
         //template.convertAndSend("hello-3", "Test");
 
